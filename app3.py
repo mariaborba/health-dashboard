@@ -708,7 +708,7 @@ def tela_gestor_pleno():
 
 # --- NAVEGAÇÃO LATERAL ---
 with st.sidebar:
-    st.image("/home/duda/DM HEALTH/imagens/DM.jpg", width=60)
+    st.image("imagens/DM.jpg", width=60)
     st.markdown("## DM Health")
     st.markdown("Selecione o Perfil:")
     
