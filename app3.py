@@ -508,14 +508,14 @@ def tela_profissional():
         return
 
     # --- SE NÃO, MOSTRA O DASHBOARD GERAL ---
-    st.markdown("### Painel do Médico")
+    st.markdown("### Painel do Profissional de Saúde")
     
     # KPIs SUPERIORES (Mantidos)
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.markdown(f'<div class="card-metric-orange"><div class="metric-title">Ocupação</div><div class="metric-value">85%</div></div>', unsafe_allow_html=True)
-    with c2: st.markdown(f'<div class="card-metric-green"><div class="metric-title">Hoje</div><div class="metric-value">12 Pcts</div></div>', unsafe_allow_html=True)
+    with c2: st.markdown(f'<div class="card-metric-green"><div class="metric-title">Hoje</div><div class="metric-value">12 Pacientes</div></div>', unsafe_allow_html=True)
     with c3: st.markdown(f'<div class="card-metric-orange"><div class="metric-title">Cancelados</div><div class="metric-value">1</div></div>', unsafe_allow_html=True)
-    with c4: st.markdown(f'<div class="card-metric-green"><div class="metric-title">TMA</div><div class="metric-value">18 min</div></div>', unsafe_allow_html=True)
+    with c4: st.markdown(f'<div class="card-metric-green"><div class="metric-title">Tempo Médio de Atendimento</div><div class="metric-value">18 min</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
     
