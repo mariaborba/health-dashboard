@@ -690,6 +690,33 @@ def tela_gestor_pleno():
             st.metric("Profissionais", "4.5/5")
             st.metric("Suporte TI", "4.9/5")
 
+
+def tela_assistente():
+    st.markdown("### Painel do Assistente")
+    
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Fila de Espera", "12 min", "Média Atual")
+    k2.metric("Ociosidade Agenda", "10%", "2 horários")
+    k3.metric("Confirmados", "92%", "Agenda de Amanhã")
+    k4.metric("Msgs Pendentes", "15", "Chat")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.container(border=True):
+            st.markdown("#### Eficiência Operacional")
+            fig = go.Figure(go.Bar(
+                x=[85, 90, 60], y=['Respostas Notif.', 'Confirmação', 'Triagem'],
+                orientation='h', marker_color='#0288D1'
+            ))
+            fig.update_layout(title="Taxa de Execução (%)", height=200, margin=dict(l=0,r=0,t=30,b=0))
+            st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        with st.container(border=True):
+            st.markdown("#### Feedback e Volume")
+            st.metric("Interações Totais", "145", "Hoje")
+            st.metric("Telemedicina", "30%", "Das consultas")
+
 def tela_paciente_gestante():
     st.markdown("### 🤰 Painel da Gestante (Pré-Natal)")
     
@@ -924,60 +951,134 @@ def aba_jornada_gestante():
     st.plotly_chart(fig_cal, use_container_width=True)
 
 # --- 2. ABA DO PROFISSIONAL: "Vigilância Ativa" ---
+# --- GERADOR DE DADOS DINÂMICO ---
+def get_dados_radar_estilo_vida(paciente_nome):
+    # Simulando perfis diferentes para testar o filtro
+    perfis = {
+        "Ana Silva": [85, 30, 70, 100, 95],   # Sedentária
+        "Maria Souza": [95, 90, 95, 100, 100], # Atleta/Exemplar
+        "Joana Lima": [40, 20, 30, 60, 50],    # Risco Alto (Baixa adesão)
+        "Carla Dias": [70, 60, 80, 90, 80]     # Média
+    }
+    
+    # Pega os dados ou usa um padrão se não encontrar
+    valores = perfis.get(paciente_nome, [80, 50, 70, 90, 85])
+    
+    return pd.DataFrame({
+        "Categoria": ["Suplementação", "Ativ. Física", "Qualidade Nutricional", "Consultas", "Exames"],
+        "Valor": valores
+    })
+
+def get_dados_pa_sintomas_dinamico(paciente_nome):
+    # Pequena variação nos dados para parecer real quando troca o paciente
+    np.random.seed(len(paciente_nome)) # Seed baseada no nome para ser consistente
+    base_sist = np.random.randint(110, 140)
+    base_diast = np.random.randint(70, 90)
+    
+    datas = pd.date_range(end=datetime.now(), periods=14)
+    sistolica = [base_sist + np.random.randint(-5, 10) for _ in range(14)]
+    diastolica = [base_diast + np.random.randint(-3, 5) for _ in range(14)]
+    
+    df = pd.DataFrame({"Data": datas, "Sistólica": sistolica, "Diastólica": diastolica})
+    df['Sintoma'] = None
+    
+    # Adiciona sintoma aleatório em um dia
+    if "Joana" in paciente_nome: # Paciente de risco
+        df.loc[12, 'Sintoma'] = "Cefaleia"
+        df.loc[13, 'Sintoma'] = "Visão Turva"
+        
+    return df
+
+# --- ABA VIGILÂNCIA ATIVA COM FILTRO ---
 def aba_vigilancia_ativa():
     st.subheader("🩺 Vigilância Ativa & Estilo de Vida")
     
+    # 1. ÁREA DE FILTRO (NOVO)
+    c_filtro, c_resumo = st.columns([1, 3])
+    with c_filtro:
+        lista_pacientes = ["Ana Silva", "Maria Souza", "Joana Lima", "Carla Dias"]
+        paciente_sel = st.selectbox("Selecione a Paciente:", lista_pacientes)
+        
+    with c_resumo:
+        # Mostra um resumo rápido do perfil selecionado
+        if paciente_sel == "Joana Lima":
+            st.warning(f"⚠️ **Perfil de Risco:** {paciente_sel} apresenta baixa adesão e sintomas recentes.")
+        elif paciente_sel == "Maria Souza":
+            st.success(f"✅ **Perfil Estável:** {paciente_sel} está seguindo todas as recomendações.")
+        else:
+            st.info(f"ℹ️ Visualizando dados de monitoramento de **{paciente_sel}**.")
+
+    st.markdown("---")
+    
     c_radar, c_pa = st.columns([1, 2])
     
+    # 2. RADAR ATUALIZADO PELO FILTRO
     with c_radar:
         with st.container(border=True):
-            st.markdown("#### Estilo de Vida")
-            df_radar = get_dados_radar_estilo_vida()
+            st.markdown(f"#### 🎯 Radar de Hábitos: {paciente_sel.split()[0]}")
+            
+            # Busca dados específicos da paciente selecionada
+            df_radar = get_dados_radar_estilo_vida(paciente_sel)
             
             fig = go.Figure(go.Scatterpolar(
                 r=df_radar['Valor'], theta=df_radar['Categoria'], fill='toself',
-                line_color='#0091EA'
+                line_color='#0091EA', name=paciente_sel
             ))
-            fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), 
-                              height=300, margin=dict(t=20, b=20, l=30, r=30))
-            st.plotly_chart(fig, use_container_width=True)
-            if df_radar[df_radar['Categoria']=='Ativ. Física']['Valor'].values[0] < 50:
-                st.warning("⚠️ **Atenção:** Paciente sedentária. Reforçar orientação.")
+            
+            # Adiciona linha de meta (Ideal) para comparação
+            fig.add_trace(go.Scatterpolar(
+                r=[80, 80, 80, 100, 100], theta=df_radar['Categoria'], 
+                line_color='rgba(0,0,0,0.3)', line_dash='dot', name='Meta Clínica', hoverinfo='skip'
+            ))
 
+            fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), 
+                              height=350, margin=dict(t=30, b=30, l=40, r=40), showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Feedback Automático Baseado no Dado
+            val_fisica = df_radar[df_radar['Categoria']=='Ativ. Física']['Valor'].values[0]
+            val_suple = df_radar[df_radar['Categoria']=='Suplementação']['Valor'].values[0]
+            
+            if val_fisica < 50:
+                st.caption("🔴 **Sedentarismo:** Prescrever caminhada leve 3x/semana.")
+            if val_suple < 60:
+                st.caption("🟠 **Suplementação:** Verificar adesão ao Ferro/Ácido Fólico.")
+
+    # 3. GRÁFICO PA x SINTOMAS (DINÂMICO)
     with c_pa:
         with st.container(border=True):
-            st.markdown("#### Monitoramento PA x Sintomas")
-            df_pa = get_dados_pa_sintomas()
+            st.markdown(f"#### 🩸 Monitoramento PA (14 dias)")
+            
+            df_pa = get_dados_pa_sintomas_dinamico(paciente_sel)
             
             fig = go.Figure()
-            # Linhas de PA
             fig.add_trace(go.Scatter(x=df_pa['Data'], y=df_pa['Sistólica'], name='Sistólica', line=dict(color='#EF5350')))
             fig.add_trace(go.Scatter(x=df_pa['Data'], y=df_pa['Diastólica'], name='Diastólica', line=dict(color='#42A5F5')))
             
-            # Marcadores de Sintomas (Sinais de Alerta)
+            # Sintomas
             sintomas = df_pa.dropna(subset=['Sintoma'])
-            fig.add_trace(go.Scatter(
-                x=sintomas['Data'], y=sintomas['Sistólica'], mode='markers', 
-                marker=dict(size=12, color='black', symbol='x'),
-                name='Sintoma Relatado', text=sintomas['Sintoma']
-            ))
-            
-            # Linha de Alerta (140 mmHg)
+            if not sintomas.empty:
+                fig.add_trace(go.Scatter(
+                    x=sintomas['Data'], y=sintomas['Sistólica'], mode='markers', 
+                    marker=dict(size=12, color='black', symbol='x'),
+                    name='Sintoma', text=sintomas['Sintoma']
+                ))
+
             fig.add_hline(y=140, line_dash="dash", line_color="red", annotation_text="Limite Risco")
-            
-            fig.update_layout(height=300, margin=dict(l=20, r=20, t=30, b=20))
+            fig.update_layout(height=350, margin=dict(l=20, r=20, t=30, b=20), hovermode="x unified")
             st.plotly_chart(fig, use_container_width=True)
-            
+
     st.markdown("---")
     
-    # Score de Preparo
+    # Score Geral (Rodapé)
     c_score1, c_score2 = st.columns([3, 1])
     with c_score1:
-        st.markdown("#### 🎓 Score de Preparo para o Parto")
-        st.progress(0.65, text="65% Concluído (Plano de Parto Pendente)")
+        st.markdown("#### 🎓 Score de Engajamento do Paciente")
+        # Score calculado (média dos valores do radar)
+        score_medio = int(df_radar['Valor'].mean())
+        st.progress(score_medio/100, text=f"{score_medio}/100 - Baseado em adesão e hábitos")
     with c_score2:
-        st.metric("Consultas Pré-Natal", "5/8", "Adequado")
-
+        st.metric("Risco Calculado", "Baixo" if score_medio > 70 else "Alto", delta_color="inverse")
 # --- 3. ABA DO GESTOR: "Qualidade & Desfechos" ---
 def aba_qualidade_desfechos():
     st.subheader("Qualidade, Desfechos e Sustentabilidade")
