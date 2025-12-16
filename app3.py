@@ -758,7 +758,7 @@ def tela_paciente_gestante():
     st.markdown("<br>", unsafe_allow_html=True)
 
     # --- PARTE 3: AGENDA DE PRÉ-NATAL ---
-    st.subheader("📅 Agenda Pré-Natal")
+    st.subheader("Agenda Pré-Natal")
     
     # Navegação de Semanas
     start_of_week = st.session_state.data_ref_gest - timedelta(days=st.session_state.data_ref_gest.weekday())
@@ -893,11 +893,11 @@ def aba_jornada_gestante():
             fig.update_layout(height=300, margin=dict(l=20, r=20, t=30, b=20),
                               xaxis_title="Semana Gestacional", yaxis_title="Peso (kg)")
             st.plotly_chart(fig, use_container_width=True)
-            st.info("💡 **Dica Nutricional:** Seu ganho está dentro do esperado! Mantenha o consumo de proteínas.")
+            st.info("**Dica Nutricional:** Seu ganho está dentro do esperado! Mantenha o consumo de proteínas.")
 
     with c2:
         with st.container(border=True):
-            st.markdown("#### 🦶 Contador de Movimentos")
+            st.markdown("#### Contador de Movimentos")
             st.markdown("Sentiu o bebê mexer hoje?")
             
             col_k1, col_k2 = st.columns(2)
@@ -912,7 +912,7 @@ def aba_jornada_gestante():
             
     st.markdown("---")
     
-    st.markdown("#### 📅 Diário de Sintomas (EMA)")
+    st.markdown("#### Diário de Sintomas")
     df_sintomas = get_dados_bem_estar()
     
     # Mapa de Calor Simplificado (Scatter Plot estilo Calendar)
@@ -931,7 +931,7 @@ def aba_vigilancia_ativa():
     
     with c_radar:
         with st.container(border=True):
-            st.markdown("#### 🎯 Estilo de Vida (Tier 3)")
+            st.markdown("#### Estilo de Vida")
             df_radar = get_dados_radar_estilo_vida()
             
             fig = go.Figure(go.Scatterpolar(
@@ -946,7 +946,7 @@ def aba_vigilancia_ativa():
 
     with c_pa:
         with st.container(border=True):
-            st.markdown("#### 🩸 Monitoramento PA x Sintomas (Tier 2/3)")
+            st.markdown("#### Monitoramento PA x Sintomas")
             df_pa = get_dados_pa_sintomas()
             
             fig = go.Figure()
@@ -980,16 +980,16 @@ def aba_vigilancia_ativa():
 
 # --- 3. ABA DO GESTOR: "Qualidade & Desfechos" ---
 def aba_qualidade_desfechos():
-    st.subheader("🏥 Qualidade, Desfechos e Sustentabilidade")
+    st.subheader("Qualidade, Desfechos e Sustentabilidade")
     
     # Big Number de Alerta (Tier 3 - Sinais de Alerta)
-    st.error("🚨 **Early Warning:** 12 Pacientes relataram sangramento ou cefaleia nas últimas 24h.")
+    st.error("**Early Warning:** 12 Pacientes relataram sangramento ou cefaleia nas últimas 24h.")
     
     c_sankey, c_scatter = st.columns(2)
     
     with c_sankey:
         with st.container(border=True):
-            st.markdown("#### 🔀 Funil de Desfechos Obstétricos")
+            st.markdown("#### Funil de Desfechos Obstétricos")
             # Sankey Diagram Simples
             fig = go.Figure(data=[go.Sankey(
                 node = dict(
@@ -1007,7 +1007,7 @@ def aba_qualidade_desfechos():
 
     with c_scatter:
         with st.container(border=True):
-            st.markdown("#### 🤖 Matriz Experiência vs. Tecnologia (TAM)")
+            st.markdown("#### Matriz Experiência vs. Tecnologia")
             # Scatter Plot
             df_ux = pd.DataFrame({
                 "Unidade": ["UBS Centro", "UBS Norte", "UBS Sul", "UBS Leste"],
@@ -1024,7 +1024,7 @@ def aba_qualidade_desfechos():
             
     # Sustentabilidade
     with st.container(border=True):
-        st.markdown("#### 💰 Sustentabilidade e Eficiência")
+        st.markdown("#### Sustentabilidade e Eficiência")
         c1, c2, c3 = st.columns(3)
         c1.metric("Custo Médio / Paciente", "R$ 450", "-10% vs Não-monit.")
         c2.metric("Intercorrências Evitadas", "15", "Economia R$ 45k")
