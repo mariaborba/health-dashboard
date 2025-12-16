@@ -495,14 +495,12 @@ def render_prontuario_paciente(nome_paciente):
                     st.button("Visualizar", key=f"doc_{i}")
 
 
-
-
 def tela_profissional():
-    # --- LÓGICA DE NAVEGAÇÃO INTERNA ---
+    # --- LÓGICA DE NAVEGAÇÃO INTERNA (PRONTUÁRIO) ---
     if 'paciente_selecionado' not in st.session_state:
         st.session_state['paciente_selecionado'] = None
 
-    # Se tiver paciente selecionado, renderiza o Prontuário e PARA aqui (return)
+    # Se tiver paciente selecionado, renderiza o Prontuário e PARA a execução aqui
     if st.session_state['paciente_selecionado'] is not None:
         render_prontuario_paciente(st.session_state['paciente_selecionado'])
         return
@@ -510,102 +508,88 @@ def tela_profissional():
     # --- SE NÃO, MOSTRA O DASHBOARD GERAL ---
     st.markdown("### Painel do Profissional de Saúde")
     
-    # KPIs SUPERIORES (Mantidos)
+    # 1. KPIs SUPERIORES (Mantidos - Visão Rápida)
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.markdown(f'<div class="card-metric-orange"><div class="metric-title">Ocupação</div><div class="metric-value">85%</div></div>', unsafe_allow_html=True)
     with c2: st.markdown(f'<div class="card-metric-green"><div class="metric-title">Hoje</div><div class="metric-value">12 Pacientes</div></div>', unsafe_allow_html=True)
     with c3: st.markdown(f'<div class="card-metric-orange"><div class="metric-title">Cancelados</div><div class="metric-value">1</div></div>', unsafe_allow_html=True)
-    with c4: st.markdown(f'<div class="card-metric-green"><div class="metric-title">Tempo Médio de Atendimento</div><div class="metric-value">18 min</div></div>', unsafe_allow_html=True)
+    with c4: st.markdown(f'<div class="card-metric-green"><div class="metric-title">Tempo Médio</div><div class="metric-value">18 min</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
     
-    # --- AGENDA INTERATIVA ---
-    c_head, c_nav = st.columns([1, 2])
-    with c_head: st.subheader("Agenda Diária")
-
-    # Navegação de Dias (Mantida)
-    if 'dia_medico_sel' not in st.session_state: st.session_state['dia_medico_sel'] = 15
-    nums_dias = [15, 16, 17, 18, 19, 20]
-    cols_dias = st.columns(6)
-    for i, col in enumerate(cols_dias):
-        with col:
-            tipo = "primary" if nums_dias[i] in [15, 16, 17] else "secondary"
-            if st.button(f"{nums_dias[i]}", key=f"med_d_{i}", type=tipo):
-                st.session_state['dia_medico_sel'] = nums_dias[i]
-
-    # LISTA DE PACIENTES (AGORA CLICÁVEL)
-    dia_sel = st.session_state['dia_medico_sel']
-    st.markdown(f"**Visualizando: {dia_sel} de Dezembro**")
-
-    # Dados Mockados
-    agenda_dados = {
-        15: [("08:00", "João Silva", "Retorno", "confirmado"), 
-             ("09:00", "Maria Souza", "Primeira vez", "confirmado"), 
-             ("10:00", "-- Intervalo --", "", "livre")],
-        16: [("08:00", "Carlos Ferreira", "Retorno", "atencao")]
-    }
-    consultas = agenda_dados.get(dia_sel, [("08:00", "-- Livre --", "", "livre")])
-
-    with st.container(border=True):
-        for idx, (hora, paciente, tipo, status) in enumerate(consultas):
-            c_hora, c_card, c_btn = st.columns([1, 5, 2])
-            
-            with c_hora:
-                st.markdown(f"<div style='margin-top:15px; font-weight:bold;'>{hora}</div>", unsafe_allow_html=True)
-            
-            with c_card:
-                if status == "livre":
-                    st.markdown(f"<div style='background:#f9f9f9; padding:10px; border-radius:8px; color:#aaa;'>Disponível</div>", unsafe_allow_html=True)
-                else:
-                    cor_borda = "#FB8C00" if status == "atencao" else "#009688"
-                    st.markdown(f"""
-                    <div style='background:#F1F8F9; padding:10px; border-radius:8px; border-left: 5px solid {cor_borda};'>
-                        <b>{paciente}</b> <span style='font-size:12px; color:#666'> - {tipo}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-            
-            # BOTÃO DE AÇÃO: VER PRONTUÁRIO
-            with c_btn:
-                if status != "livre":
-                    # Ao clicar aqui, mudamos o estado 'paciente_selecionado' e damos rerun
-                    if st.button("📋 Prontuário", key=f"btn_pront_{dia_sel}_{idx}"):
-                        st.session_state['paciente_selecionado'] = paciente
-                        st.rerun()
-
-    st.markdown("---")
-    # (Restante dos gráficos mantidos...)
-    c1, c2 = st.columns([2, 1])
-    with c1: 
-        st.markdown("#### Desempenho")
-        st.plotly_chart(plot_gauge(78, "Resolução"), use_container_width=True)
-    with c2:
-        st.markdown("#### Alertas")
-        st.error("🚨 2 Risco Alto")
-def tela_assistente():
-    st.markdown("### Painel do Assistente")
+    # --- 2. CRIAÇÃO DAS ABAS ---
+    # Aqui separamos o operacional (Agenda) do estratégico (Vigilância)
+    tab_agenda, tab_vigilancia = st.tabs(["📅 Agenda Diária", "🩺 Vigilância Ativa"])
     
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Fila de Espera", "12 min", "Média Atual")
-    k2.metric("Ociosidade Agenda", "10%", "2 horários")
-    k3.metric("Confirmados", "92%", "Agenda de Amanhã")
-    k4.metric("Msgs Pendentes", "15", "Chat")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        with st.container(border=True):
-            st.markdown("#### Eficiência Operacional")
-            fig = go.Figure(go.Bar(
-                x=[85, 90, 60], y=['Respostas Notif.', 'Confirmação', 'Triagem'],
-                orientation='h', marker_color='#0288D1'
-            ))
-            fig.update_layout(title="Taxa de Execução (%)", height=200, margin=dict(l=0,r=0,t=30,b=0))
-            st.plotly_chart(fig, use_container_width=True)
+    # --- ABA 1: AGENDA (Seu código original ajustado) ---
+    with tab_agenda:
+        c_head, c_nav = st.columns([1, 2])
+        with c_head: st.subheader("Agenda Diária")
 
-    with col2:
+        # Navegação de Dias
+        if 'dia_medico_sel' not in st.session_state: st.session_state['dia_medico_sel'] = 15
+        nums_dias = [15, 16, 17, 18, 19, 20]
+        cols_dias = st.columns(6)
+        for i, col in enumerate(cols_dias):
+            with col:
+                tipo = "primary" if nums_dias[i] in [15, 16, 17] else "secondary"
+                if st.button(f"{nums_dias[i]}", key=f"med_d_{i}", type=tipo):
+                    st.session_state['dia_medico_sel'] = nums_dias[i]
+
+        # Lista de Pacientes
+        dia_sel = st.session_state['dia_medico_sel']
+        st.markdown(f"**Visualizando: {dia_sel} de Dezembro**")
+
+        # Dados Mockados
+        agenda_dados = {
+            15: [("08:00", "João Silva", "Retorno", "confirmado"), 
+                 ("09:00", "Maria Souza", "Primeira vez", "confirmado"), 
+                 ("10:00", "-- Intervalo --", "", "livre")],
+            16: [("08:00", "Carlos Ferreira", "Retorno", "atencao")]
+        }
+        consultas = agenda_dados.get(dia_sel, [("08:00", "-- Livre --", "", "livre")])
+
         with st.container(border=True):
-            st.markdown("#### Feedback e Volume")
-            st.metric("Interações Totais", "145", "Hoje")
-            st.metric("Telemedicina", "30%", "Das consultas")
+            for idx, (hora, paciente, tipo, status) in enumerate(consultas):
+                c_hora, c_card, c_btn = st.columns([1, 5, 2])
+                
+                with c_hora:
+                    st.markdown(f"<div style='margin-top:15px; font-weight:bold;'>{hora}</div>", unsafe_allow_html=True)
+                
+                with c_card:
+                    if status == "livre":
+                        st.markdown(f"<div style='background:#f9f9f9; padding:10px; border-radius:8px; color:#aaa;'>Disponível</div>", unsafe_allow_html=True)
+                    else:
+                        cor_borda = "#FB8C00" if status == "atencao" else "#009688"
+                        st.markdown(f"""
+                        <div style='background:#F1F8F9; padding:10px; border-radius:8px; border-left: 5px solid {cor_borda};'>
+                            <b>{paciente}</b> <span style='font-size:12px; color:#666'> - {tipo}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Botão de Prontuário
+                with c_btn:
+                    if status != "livre":
+                        if st.button("📋 Prontuário", key=f"btn_pront_{dia_sel}_{idx}"):
+                            st.session_state['paciente_selecionado'] = paciente
+                            st.rerun()
+
+        st.markdown("---")
+        
+        # Gráficos de Rodapé (Desempenho e Alertas da Agenda)
+        c_perf1, c_perf2 = st.columns([2, 1])
+        with c_perf1: 
+            st.markdown("#### Desempenho")
+            st.plotly_chart(plot_gauge(78, "Resolução"), use_container_width=True)
+        with c_perf2:
+            st.markdown("#### Alertas do Dia")
+            st.error("🚨 2 Pacientes com Risco Alto na agenda de hoje")
+
+    # --- ABA 2: VIGILÂNCIA ATIVA (Novo Dashboard Tier 2/3) ---
+    with tab_vigilancia:
+        # Chama a função que criamos anteriormente
+        # Certifique-se de ter copiado a função 'aba_vigilancia_ativa()' no seu código
+        aba_vigilancia_ativa()
 
 def tela_gestor_unidade():
     st.markdown("### Gestor de Unidade (UBS Central)")
@@ -706,6 +690,346 @@ def tela_gestor_pleno():
             st.metric("Profissionais", "4.5/5")
             st.metric("Suporte TI", "4.9/5")
 
+def tela_paciente_gestante():
+    st.markdown("### 🤰 Painel da Gestante (Pré-Natal)")
+    
+    # INICIALIZAÇÃO DE ESTADO
+    if 'meds_gest_open' not in st.session_state: st.session_state.meds_gest_open = False
+    if 'data_ref_gest' not in st.session_state: st.session_state.data_ref_gest = datetime.now()
+    if 'dia_sel_gest' not in st.session_state: st.session_state.dia_sel_gest = datetime.now().date()
+
+    # DADOS MOCKADOS ESPECÍFICOS DE GESTANTE
+    data_hoje = datetime.now().strftime("%d/%m/%Y")
+    
+    # --- PARTE 1: CARDS DO TOPO (MATERNO-FETAL) ---
+    c1, c2, c3, c4, c5 = st.columns(5)
+
+    # Card 1: Idade Gestacional (O mais importante)
+    with c1:
+        st.markdown(f"""
+        <div class="card-metric-orange">
+            <div class="metric-title">Idade Gestacional</div>
+            <div class="metric-value" style="color:#E65100">28 Semanas</div>
+            <div class="metric-footer">+ 3 dias | 3º Trimestre</div>
+        </div>""", unsafe_allow_html=True)
+
+    # Card 2: Próximo Pré-Natal
+    with c2:
+        st.markdown(f"""
+        <div class="card-metric-green">
+            <div class="metric-title">Próximo Pré-Natal</div>
+            <div class="metric-value">18/12 - 14h</div>
+            <div class="metric-footer">Dr. Carlos (Obstetra)</div>
+        </div>""", unsafe_allow_html=True)
+
+    # Card 3: DPP (Data Provável do Parto)
+    with c3:
+        st.markdown(f"""
+        <div class="card-metric-green">
+            <div class="metric-title">Data do Parto (DPP)</div>
+            <div class="metric-value">15/03/2026</div>
+            <div class="metric-footer">Restam 12 semanas</div>
+        </div>""", unsafe_allow_html=True)
+
+    # Card 4: Movimentação Fetal (Tier 2 - Monitoramento Clínico)
+    with c4:
+        st.markdown(f"""
+        <div class="card-metric-green">
+            <div class="metric-title">Movimentos Hoje</div>
+            <div class="metric-value">12 Chutes 👣</div>
+            <div class="metric-footer">Meta diária atingida</div>
+        </div>""", unsafe_allow_html=True)
+        
+    # Card 5: Suplementação (Tier 3 - Hábitos)
+    with c5:
+        st.markdown(f"""
+        <div class="card-metric-green">
+            <div class="metric-title">Suplementação</div>
+            <div class="metric-value">Pendente 💊</div>
+            <div class="metric-footer">Ácido Fólico (Manhã)</div>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # --- PARTE 2: JORNADA TIER 2 & 3 (Gráficos Específicos) ---
+    # Aqui chamamos a função que criamos anteriormente para Peso e Bem-Estar
+    aba_jornada_gestante() 
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # --- PARTE 3: AGENDA DE PRÉ-NATAL ---
+    st.subheader("📅 Agenda Pré-Natal")
+    
+    # Navegação de Semanas
+    start_of_week = st.session_state.data_ref_gest - timedelta(days=st.session_state.data_ref_gest.weekday())
+    
+    col_prev, col_mes, col_next = st.columns([1, 6, 1])
+    with col_prev:
+        if st.button("◀", key="prev_wk_g"):
+            st.session_state.data_ref_gest -= timedelta(days=7)
+            st.rerun()
+    with col_mes:
+        st.markdown(f"<div class='month-selector'>{start_of_week.strftime('%B %Y').capitalize()}</div>", unsafe_allow_html=True)
+    with col_next:
+        if st.button("▶", key="next_wk_g"):
+            st.session_state.data_ref_gest += timedelta(days=7)
+            st.rerun()
+
+    # Dias da Semana
+    cols_dias = st.columns(7)
+    dias_semana_nome = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"]
+    
+    # Mock de Consultas de Gestante (Ex: dia 18 tem consulta)
+    dias_consulta_gestante = [18, 25] 
+    
+    for i, col in enumerate(cols_dias):
+        data_loop = start_of_week + timedelta(days=i)
+        dia_num = data_loop.day
+        
+        # Lógica visual: Verde Escuro se tiver consulta
+        tipo_btn = "primary" if dia_num in dias_consulta_gestante else "secondary"
+        
+        with col:
+            st.caption(dias_semana_nome[i])
+            if st.button(f"{dia_num}", key=f"g_d_{dia_num}", type=tipo_btn):
+                st.session_state.dia_sel_gest = data_loop
+                st.rerun()
+
+    # Detalhe do Dia
+    dia_fmt = st.session_state.dia_sel_gest.strftime("%d/%m/%Y")
+    dia_int = st.session_state.dia_sel_gest.day
+    
+    with st.container(border=True):
+        st.markdown(f'<p class="agenda-header">Compromissos do Dia {dia_fmt}</p>', unsafe_allow_html=True)
+        st.divider()
+        
+        if dia_int == 18:
+            st.markdown("""
+            <div style="background-color: #E3F2FD; padding: 15px; border-radius: 8px; border-left: 5px solid #2196F3;">
+                <strong>14:00</strong> - Consulta Pré-Natal Mensal
+                <br><span style="font-size: 12px; color: #666;">Dr. Carlos (Obstetra) - Trazer últimos exames</span>
+            </div>
+            """, unsafe_allow_html=True)
+        elif dia_int == 25:
+             st.markdown("""
+            <div style="background-color: #F3E5F5; padding: 15px; border-radius: 8px; border-left: 5px solid #9C27B0;">
+                <strong>09:00</strong> - Ultrassom Morfológico
+                <br><span style="font-size: 12px; color: #666;">Laboratório Imagem - Chegar 15min antes</span>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("<div style='text-align:center; color:#999; padding:20px;'>Dia livre. Aproveite para descansar! 🧘‍♀️</div>", unsafe_allow_html=True)
+
+
+def get_dados_peso_gestacional():
+    # Simula curva de peso para Tier 2 (Monitoramento Clínico) e Tier 3 (Nutrição)
+    semanas = list(range(0, 42))
+    # Peso inicial 60kg
+    peso_ideal_min = [60 + (0.3 * s) if s > 12 else 60 for s in semanas]
+    peso_ideal_max = [60 + (0.5 * s) if s > 12 else 60 + 2 for s in semanas]
+    peso_real = [60 + (0.4 * s) + np.random.uniform(-0.5, 0.5) if s > 12 else 60 + np.random.uniform(-0.2, 0.2) for s in semanas[:28]] # Até semana 28
+    
+    return pd.DataFrame({
+        "Semana": semanas,
+        "Mínimo Ideal": peso_ideal_min,
+        "Máximo Ideal": peso_ideal_max,
+        "Peso Real": peso_real + [None] * (42 - 28)
+    })
+
+def get_dados_bem_estar():
+    # Simula Diário de Bem-Estar (EMA - Tier 3)
+    datas = [datetime.now().date() - timedelta(days=i) for i in range(30)]
+    humores = np.random.choice(["Bem", "Cansaço", "Enjoo", "Dor", "Ansiedade"], 30, p=[0.5, 0.2, 0.15, 0.1, 0.05])
+    return pd.DataFrame({"Data": datas, "Sintoma": humores})
+
+def get_dados_radar_estilo_vida():
+    # Métricas TIER 3 (Hábitos)
+    return pd.DataFrame({
+        "Categoria": ["Suplementação", "Ativ. Física", "Qualidade Nutricional", "Consultas", "Exames"],
+        "Valor": [85, 40, 70, 100, 95] # Exemplo: Baixa atividade física
+    })
+
+def get_dados_pa_sintomas():
+    # Correlação PA (Tier 2) x Sintomas (Tier 3)
+    datas = pd.date_range(end=datetime.now(), periods=14)
+    sistolica = [110, 112, 115, 118, 120, 135, 142, 138, 130, 125, 122, 120, 118, 115]
+    diastolica = [70, 72, 75, 78, 80, 85, 92, 88, 85, 80, 78, 75, 72, 70]
+    
+    df = pd.DataFrame({"Data": datas, "Sistólica": sistolica, "Diastólica": diastolica})
+    
+    # Adiciona sintomas nos dias de pico
+    df['Sintoma'] = None
+    df.loc[6, 'Sintoma'] = "Cefaleia Intensa" # Dia do pico 142/92
+    df.loc[5, 'Sintoma'] = "Visão Turva"
+    return df
+
+# --- 1. ABA DA GESTANTE: "Jornada & Bem-Estar" ---
+def aba_jornada_gestante():
+    st.subheader("🤰 Minha Jornada e Bem-Estar")
+    
+    c1, c2 = st.columns([2, 1])
+    
+    with c1:
+        with st.container(border=True):
+            st.markdown("#### ⚖️ Curva de Ganho de Peso (IOM)")
+            df_peso = get_dados_peso_gestacional()
+            
+            fig = go.Figure()
+            # Faixa Ideal (Área Sombreada)
+            fig.add_trace(go.Scatter(
+                x=df_peso['Semana'], y=df_peso['Máximo Ideal'], mode='lines', line=dict(width=0),
+                showlegend=False, hoverinfo='skip'
+            ))
+            fig.add_trace(go.Scatter(
+                x=df_peso['Semana'], y=df_peso['Mínimo Ideal'], mode='lines', line=dict(width=0),
+                fill='tonexty', fillcolor='rgba(0, 200, 83, 0.1)', name='Faixa Ideal'
+            ))
+            # Linha Real
+            fig.add_trace(go.Scatter(
+                x=df_peso['Semana'], y=df_peso['Peso Real'], mode='lines+markers',
+                line=dict(color='#2979FF', width=3), name='Meu Peso'
+            ))
+            
+            fig.update_layout(height=300, margin=dict(l=20, r=20, t=30, b=20),
+                              xaxis_title="Semana Gestacional", yaxis_title="Peso (kg)")
+            st.plotly_chart(fig, use_container_width=True)
+            st.info("💡 **Dica Nutricional:** Seu ganho está dentro do esperado! Mantenha o consumo de proteínas.")
+
+    with c2:
+        with st.container(border=True):
+            st.markdown("#### 🦶 Contador de Movimentos")
+            st.markdown("Sentiu o bebê mexer hoje?")
+            
+            col_k1, col_k2 = st.columns(2)
+            with col_k1:
+                if st.button("👣 Chutar", type="primary", use_container_width=True):
+                    st.toast("Movimento registrado! 👶")
+            
+            with col_k2:
+                st.metric("Hoje", "12", "+3 vs ontem")
+            
+            st.progress(0.8, text="Meta diária (10 movimentos)")
+            
+    st.markdown("---")
+    
+    st.markdown("#### 📅 Diário de Sintomas (EMA)")
+    df_sintomas = get_dados_bem_estar()
+    
+    # Mapa de Calor Simplificado (Scatter Plot estilo Calendar)
+    fig_cal = px.scatter(df_sintomas, x="Data", y=[1]*len(df_sintomas), 
+                         color="Sintoma", size=[20]*len(df_sintomas),
+                         color_discrete_map={"Bem":"#66BB6A", "Cansaço":"#FFEE58", "Enjoo":"#FFA726", "Dor":"#EF5350", "Ansiedade":"#AB47BC"})
+    
+    fig_cal.update_layout(height=150, yaxis_visible=False, xaxis_title="", showlegend=True, margin=dict(t=10,b=10))
+    st.plotly_chart(fig_cal, use_container_width=True)
+
+# --- 2. ABA DO PROFISSIONAL: "Vigilância Ativa" ---
+def aba_vigilancia_ativa():
+    st.subheader("🩺 Vigilância Ativa & Estilo de Vida")
+    
+    c_radar, c_pa = st.columns([1, 2])
+    
+    with c_radar:
+        with st.container(border=True):
+            st.markdown("#### 🎯 Estilo de Vida (Tier 3)")
+            df_radar = get_dados_radar_estilo_vida()
+            
+            fig = go.Figure(go.Scatterpolar(
+                r=df_radar['Valor'], theta=df_radar['Categoria'], fill='toself',
+                line_color='#0091EA'
+            ))
+            fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), 
+                              height=300, margin=dict(t=20, b=20, l=30, r=30))
+            st.plotly_chart(fig, use_container_width=True)
+            if df_radar[df_radar['Categoria']=='Ativ. Física']['Valor'].values[0] < 50:
+                st.warning("⚠️ **Atenção:** Paciente sedentária. Reforçar orientação.")
+
+    with c_pa:
+        with st.container(border=True):
+            st.markdown("#### 🩸 Monitoramento PA x Sintomas (Tier 2/3)")
+            df_pa = get_dados_pa_sintomas()
+            
+            fig = go.Figure()
+            # Linhas de PA
+            fig.add_trace(go.Scatter(x=df_pa['Data'], y=df_pa['Sistólica'], name='Sistólica', line=dict(color='#EF5350')))
+            fig.add_trace(go.Scatter(x=df_pa['Data'], y=df_pa['Diastólica'], name='Diastólica', line=dict(color='#42A5F5')))
+            
+            # Marcadores de Sintomas (Sinais de Alerta)
+            sintomas = df_pa.dropna(subset=['Sintoma'])
+            fig.add_trace(go.Scatter(
+                x=sintomas['Data'], y=sintomas['Sistólica'], mode='markers', 
+                marker=dict(size=12, color='black', symbol='x'),
+                name='Sintoma Relatado', text=sintomas['Sintoma']
+            ))
+            
+            # Linha de Alerta (140 mmHg)
+            fig.add_hline(y=140, line_dash="dash", line_color="red", annotation_text="Limite Risco")
+            
+            fig.update_layout(height=300, margin=dict(l=20, r=20, t=30, b=20))
+            st.plotly_chart(fig, use_container_width=True)
+            
+    st.markdown("---")
+    
+    # Score de Preparo
+    c_score1, c_score2 = st.columns([3, 1])
+    with c_score1:
+        st.markdown("#### 🎓 Score de Preparo para o Parto")
+        st.progress(0.65, text="65% Concluído (Plano de Parto Pendente)")
+    with c_score2:
+        st.metric("Consultas Pré-Natal", "5/8", "Adequado")
+
+# --- 3. ABA DO GESTOR: "Qualidade & Desfechos" ---
+def aba_qualidade_desfechos():
+    st.subheader("🏥 Qualidade, Desfechos e Sustentabilidade")
+    
+    # Big Number de Alerta (Tier 3 - Sinais de Alerta)
+    st.error("🚨 **Early Warning:** 12 Pacientes relataram sangramento ou cefaleia nas últimas 24h.")
+    
+    c_sankey, c_scatter = st.columns(2)
+    
+    with c_sankey:
+        with st.container(border=True):
+            st.markdown("#### 🔀 Funil de Desfechos Obstétricos")
+            # Sankey Diagram Simples
+            fig = go.Figure(data=[go.Sankey(
+                node = dict(
+                  pad = 15, thickness = 20, line = dict(color = "black", width = 0.5),
+                  label = ["Total Gestantes", "Baixo Risco", "Alto Risco", "Parto Vaginal", "Cesárea"],
+                  color = ["blue", "green", "red", "green", "orange"]
+                ),
+                link = dict(
+                  source = [0, 0, 1, 1, 2, 2], # Indices origem
+                  target = [1, 2, 3, 4, 3, 4], # Indices destino
+                  value  = [800, 200, 600, 200, 50, 150] # Quantidades
+              ))])
+            fig.update_layout(height=350, margin=dict(l=10, r=10, t=10, b=10))
+            st.plotly_chart(fig, use_container_width=True)
+
+    with c_scatter:
+        with st.container(border=True):
+            st.markdown("#### 🤖 Matriz Experiência vs. Tecnologia (TAM)")
+            # Scatter Plot
+            df_ux = pd.DataFrame({
+                "Unidade": ["UBS Centro", "UBS Norte", "UBS Sul", "UBS Leste"],
+                "Facilidade Uso App (0-10)": [8.5, 4.2, 7.0, 6.5],
+                "Satisfação Pré-Natal (0-10)": [9.0, 5.0, 8.8, 6.0],
+                "Volume": [40, 30, 50, 25]
+            })
+            fig = px.scatter(df_ux, x="Facilidade Uso App (0-10)", y="Satisfação Pré-Natal (0-10)",
+                             size="Volume", color="Unidade", text="Unidade")
+            fig.add_hline(y=7, line_dash="dot", annotation_text="Meta Satisfação")
+            fig.add_vline(x=7, line_dash="dot", annotation_text="Meta UX")
+            fig.update_layout(height=350)
+            st.plotly_chart(fig, use_container_width=True)
+            
+    # Sustentabilidade
+    with st.container(border=True):
+        st.markdown("#### 💰 Sustentabilidade e Eficiência")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Custo Médio / Paciente", "R$ 450", "-10% vs Não-monit.")
+        c2.metric("Intercorrências Evitadas", "15", "Economia R$ 45k")
+        c3.metric("Tempo Médio Suporte", "12h", "Manutenção App")
+
 # --- NAVEGAÇÃO LATERAL ---
 with st.sidebar:
     st.image("imagens/DM.jpg", width=60)
@@ -716,6 +1040,7 @@ with st.sidebar:
         "Navegação",
         [
             "Paciente",
+            "Paciente Gestante",
             "Profissional de Saúde",
             "Assistente",
             "Gestor de Unidade",
@@ -731,6 +1056,8 @@ with st.sidebar:
 # --- ROTEAMENTO ---
 if opcao == "Paciente":
     tela_paciente()
+elif opcao == "Paciente Gestante":
+    tela_paciente_gestante()
 elif opcao == "Profissional de Saúde":
     tela_profissional()
 elif opcao == "Assistente":
