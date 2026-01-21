@@ -848,38 +848,52 @@ def tela_paciente_gestante():
             st.markdown("<div style='text-align:center; color:#999; padding:20px;'>Dia livre. Aproveite para descansar!</div>", unsafe_allow_html=True)
 
 # --- PÁGINA: BI-DIFY ---
+# --- PÁGINA: BI-DIFY ---
 def tela_bi_dify():
-    st.markdown("### 📊 Business Intelligence - Integração Dify")
-    st.caption("Governança: Núcleo de IA DM Health | Responsável: Duda (Data & BI)")
+    st.markdown("### 📊 BI-DIFY: Inteligência, Dados e Governança")
+    st.caption("Foco em Pesquisa, Desenvolvimento & Inovação (PD&I) e IA Responsável.")
 
-    # Simulação de seleção de contexto (Baseado nos Endpoints 1 e 2)
+    # --- GOVERNANÇA E IDENTIDADE (Cabeçalho Institucional) ---
+    with st.expander("🛡️ Parâmetros de IA Responsável por Desenho (Responsible AI by Design)"):
+        st.markdown(f"""
+        * **Validação Metodológica:** Rodrigo (CEO/CSO) - Por quê e até onde [cite: 23, 110]
+        * **Qualidade e Rastreabilidade:** Nathy - Como corretamente [cite: 32, 111]
+        * **Operacionalização Técnica:** Duda - Como ler, monitorar e usar [cite: 40, 112]
+        """)
+        st.info("Regra de Ouro: Se um indicador não puder ser explicado, defendido e auditado, não será implementado[cite: 52, 129].")
+
+    # --- CAMADA 1: INFRAESTRUTURA E ESCOPO (Endpoints 1, 2, 3) ---
+    # Rodrigo estabelece os limites e Duda operacionaliza a leitura executiva [cite: 20, 38]
     with st.sidebar:
         st.divider()
-        st.markdown("#### Filtros de Instância")
-        # Endpoint 1: GET /api/instancia/instancias
-        instancia = st.selectbox("Instância", ["DM Health Global", "Clínica Parceira A"])
-        # Endpoint 2: GET /api/instancia/unidades-instancia
-        unidade = st.selectbox("Unidade", ["UBS Central", "Unidade Sul"])
+        st.markdown("#### Filtros de Escopo Institucional")
+        # EP 1 e 2 definem o enquadramento geral nos produtos EcoMind e Direct [cite: 5, 65]
+        instancia = st.selectbox("Instância (EP 1)", ["DM Health Global", "Clínica Parceira Alpha"])
+        unidade_id = st.selectbox("Unidade (EP 2/3)", ["UBS Central", "Unidade Sul", "Unidade Norte"])
 
-    # --- CAMADA 1: ESTRUTURA E PESSOAL (Endpoints 4, 5, 6, 7) ---
-    st.markdown("#### 👥 Composição e Capacidade")
+    # --- CAMADA 2: PESSOAS E CAPACIDADE (Endpoints 4, 5, 6, 7) ---
+    # Dados coletivos e agregados para evitar vigilância de subjetividades [cite: 171, 172]
+    st.markdown("#### 🏥 Composição da Rede e Personas")
     c1, c2, c3, c4 = st.columns(4)
-    
-    # KPIs derivados dos endpoints de listagem de profissionais, pacientes e secretárias
-    with c1: st.metric("Pacientes Ativos", "1,240", "+12%") # Endpoint 5
-    with c2: st.metric("Profissionais", "45", "Ativos")    # Endpoint 4
-    with c3: st.metric("Secretarias", "12", "Online")     # Endpoint 6
-    with c4: st.metric("Personas", "8", "Definidas")      # Endpoint 7
+    with c1: st.metric("Pacientes (EP 5)", "1,240", "Base Direct")
+    with c2: st.metric("Profissionais (EP 4)", "45", "Ativos")
+    with c3: st.metric("Secretarias (EP 6)", "12", "Suporte")
+    with c4: st.metric("Personas (EP 7)", "8", "Tipologias")
 
     st.markdown("---")
 
-    # --- CAMADA 2: SAÚDE E ENGAJAMENTO (Endpoints 8, 9, 10) ---
-    col_quest, col_score = st.columns([1, 1])
+    # --- CAMADA 3: MÉTODO, ENGAJAMENTO E CIÊNCIA (Endpoints 8, 9, 10) ---
+    # Nathy impede deriva metodológica e sustenta explicabilidade [cite: 30, 31]
+    col_metodo, col_score = st.columns([1, 2])
 
-    with col_quest:
+    with col_metodo:
         with st.container(border=True):
-            st.markdown("#### 📝 Engajamento em Questionários")
-            # Endpoint 8 e 9: Base para métrica de adesão
+            st.markdown("#### 🔬 Configuração EMA")
+            # EP 8 e 9: Estruturação da coleta e manutenção de metadados [cite: 85, 87]
+            st.write("**Questionários Ativos (EP 8):** 5")
+            st.write("**Instrumentos (EP 9):** EcoMind v2.1")
+            
+            # Dados de adesão para garantir consistência [cite: 28]
             adesao_data = {"Enviados": 500, "Respondidos": 380}
             fig_adesao = px.bar(
                 x=list(adesao_data.keys()), 
@@ -887,86 +901,35 @@ def tela_bi_dify():
                 color=list(adesao_data.keys()),
                 color_discrete_map={"Enviados": "#B2DFDB", "Respondidos": "#00796B"}
             )
-            fig_adesao.update_layout(height=250, showlegend=False, xaxis_title="")
+            fig_adesao.update_layout(height=200, showlegend=False, xaxis_title="", margin=dict(t=10, b=10))
             st.plotly_chart(fig_adesao, use_container_width=True)
-            st.caption("Base: Questionários de Pacientes e Pesquisa (Research)")
+            st.caption("A IA atua exclusivamente como suporte à decisão[cite: 7, 96].")
 
     with col_score:
         with st.container(border=True):
-            st.markdown("#### 📈 Evolução de Scores (EcoMind)")
-            st.markdown("### 📊 Evolução de Scores - EcoMind")
-    
-            # Dados simulados do Endpoint 10
+            # EP 10: Evolução de Scores no Estilo iPhone (Solicitado pelo usuário)
+            # Sinalização de padrões e tendências sem leitura clínica automática [cite: 103, 108]
+            st.markdown("#### 📈 Média Diária de Scores (EcoMind)")
+            
+            # Dados simulados do Endpoint 10 (Quizz by Paciente)
             dados_ep10 = pd.DataFrame({
-                'Dia': ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
-                'Score': [3.2, 5.1, 4.8, 0, 0, 0, 0] # Representando o gráfico da imagem
+                'Dia': ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+                'Score': [2.8, 5.2, 4.9, 0, 0, 0, 0] # Representando o gráfico da imagem
             })
             
-            st.plotly_chart(plot_score_evolution_duda(dados_ep10, "Média Diária Score"), use_container_width=True)
-            st.caption("Dados agregados para suporte à decisão humana.")
+            # Chama a função corrigida (sem borderpad)
+            st.plotly_chart(plot_score_evolution_duda(dados_ep10), use_container_width=True)
+            st.caption("Métricas agregadas para proteção de responsabilidade clínica humana[cite: 158, 159].")
 
-    # --- REGRA DE OURO (Visual) ---
-    st.warning("Se um indicador não puder ser explicado, defendido e auditado, ele não pode ser implementado.")
-    st.markdown("### 📊 BI-DIFY: Inteligência e Governança")
-    
-    # --- CABEÇALHO DE GOVERNANÇA ---
-    # Todo BI deve ser explicável, defendido e auditado 
-    with st.expander("🛡️ Parâmetros de Governança (Responsible AI by Design)"):
-        st.write(f"**Validação Metodológica:**  ")
-        st.write(f"**Qualidade e Rastreabilidade:** ")
-        st.write(f"**Operacionalização Técnica:**")
-
-    # --- CAMADA 1: INFRAESTRUTURA E PESSOAS (Endpoints 1, 2, 4, 5, 6, 7) ---
-    st.markdown("#### 🏥 Gestão de Instâncias e Personas")
-    
-    # KPIs derivados dos Endpoints de listagem
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: 
-        st.metric("Pacientes (EP 5)", "1.240", "Base Direct") # Endpoint 5 
-    with c2: 
-        st.metric("Profissionais (EP 4)", "45", "Ativos")     # Endpoint 4 
-    with c3: 
-        st.metric("Personas (EP 7)", "8", "Tipologias")      # Endpoint 7 
-    with c4: 
-        st.metric("Secretarias (EP 6)", "12", "Suporte")      # Endpoint 6 
-
-    st.markdown("---")
-
-    # --- CAMADA 2: MÉTODO E ENGAJAMENTO EMA (Endpoints 8, 9) ---
-    # A Nathy garante a correta aplicação da metodologia 
-    col_metodo, col_adesao = st.columns([1, 1])
-    
-    with col_metodo:
-        with st.container(border=True):
-            st.markdown("#### 🔬 Configuração Metodológica")
-            # Endpoint 8: Questionários disponíveis
-            st.write("**Questionários Ativos (EP 8):** 5")
-            st.write("**Foco:** Saúde Mental e Bem-Estar (EcoMind) ")
-            st.caption("Garantia de não indução de decisão automática.")
-
-    with col_adesao:
-        with st.container(border=True):
-            st.markdown("#### 📈 Adesão ao Monitoramento")
-            # Dados agregados para evitar vigilância de subjetividades 
-            fig_adesao = px.line(y=[65, 72, 68, 85], x=["Sem 1", "Sem 2", "Sem 3", "Sem 4"], 
-                                 title="Taxa de Resposta EMA (%)")
-            fig_adesao.update_traces(line_color="#00796B")
-            st.plotly_chart(fig_adesao, use_container_width=True)
-
-    # --- CAMADA 3: INSIGHTS CIENTÍFICOS (Endpoint 10) ---
-    # O Rodrigo define o método científico e limites 
-    st.markdown("#### 🧠 Score de Bem-Estar Longitudinal (Quizz EP 10)")
-    with st.container(border=True):
-        # O BI deve preservar a comparabilidade longitudinal 
-        scores_mock = [7.2, 7.5, 7.1, 7.8, 8.2, 8.0]
-        st.plotly_chart(plot_trend(scores_mock, "Evolução de Score Agregado - Instância"), use_container_width=True)
-        st.info("⚠️ Decisões clínicas e assistenciais permanecem 100% humanas.")
-
-    # --- FOOTER DE CONFORMIDADE ---
+    # --- FOOTER: SEGURANÇA E AUDITORIA ---
+    # Documentação contínua para auditoria e due diligence [cite: 117]
     st.divider()
-    if st.button("📄 Gerar Log de Auditoria"):
-        st.success("Log de rastreabilidade gerado para Due Diligence.")
-# Adicione "BI-DIFY" à lista de navegação no sidebar e ao roteamento
+    c_audit, c_warning = st.columns([1, 2])
+    with c_audit:
+        if st.button("📄 Gerar Log de Auditoria"):
+            st.success("Rastreabilidade documentada com sucesso.")
+    with c_warning:
+        st.warning("A tecnologia não 'assina embaixo'. A responsabilidade sempre tem nome, cargo e CPF[cite: 164, 165].")
 def get_dados_peso_gestacional():
     # Simula curva de peso para Tier 2 (Monitoramento Clínico) e Tier 3 (Nutrição)
     semanas = list(range(0, 42))
@@ -982,53 +945,52 @@ def get_dados_peso_gestacional():
         "Peso Real": peso_real + [None] * (42 - 28)
     })
 
-def plot_score_evolution_duda(df_scores, titulo="Evolução de Score"):
-    # df_scores deve conter colunas 'Dia' e 'Score'
-    
-    media = df_scores['Score'].mean()
+def plot_score_evolution_duda(df_scores, titulo="Média Diária"):
+    # Cálculo da média para a linha de referência (Endpoint 10)
+    media_valor = df_scores['Score'].replace(0, np.nan).mean() # Média ignorando dias sem dados
     
     fig = go.Figure()
 
-    # 1. Barras de Score (Endpoint 10)
+    # Barras de Score - Removido 'borderpad' que causava o erro
     fig.add_trace(go.Bar(
         x=df_scores['Dia'],
         y=df_scores['Score'],
-        marker_color='#00E5FF',  # Ciano estilo imagem
-        name='Score Diário',
-        bordercolor="rgba(0,0,0,0)",
-        borderpad=2
+        marker=dict(
+            color='#00E5FF',  # Ciano vibrante da imagem
+            line=dict(width=0) # Sem bordas para look clean
+        ),
+        name='Score',
+        width=0.6 # Espaçamento entre barras
     ))
 
-    # 2. Linha de Média (Dotted Green)
+    # Linha de Média (Dotted Green) - Suporte à decisão [cite: 31, 109]
     fig.add_hline(
-        y=media, 
-        line_dash="dot", 
+        y=media_valor, 
+        line_dash="dash", 
         line_color="#00C853", 
-        annotation_text=f"méd. {media:.1f}", 
+        annotation_text="méd.", 
         annotation_position="right",
-        annotation_font_color="#00C853"
+        annotation_font=dict(color="#00C853", size=12)
     )
 
-    # Configuração de Layout estilo Dark/Moderno da imagem
+    # Layout Dark Mode (Fiel à imagem do iPhone de Duda)
     fig.update_layout(
-        title={'text': titulo, 'font': {'color': 'white', 'size': 16}},
-        paper_bgcolor='#121212', # Fundo escuro
-        plot_bgcolor='#121212',
+        paper_bgcolor='black',
+        plot_bgcolor='black',
         showlegend=False,
-        height=300,
-        margin=dict(l=20, r=60, t=40, b=20),
+        height=280,
+        margin=dict(l=40, r=40, t=40, b=40),
         xaxis=dict(
             showgrid=False, 
-            color='#666', 
-            tickvals=df_scores['Dia'],
-            ticktext=[d[0] for d in df_scores['Dia']] # Mostra D, S, T...
+            color='#666',
+            tickfont=dict(size=12)
         ),
         yaxis=dict(
             showgrid=True, 
             gridcolor='#333', 
             color='#666',
-            range=[0, 10], # Escala de score
-            tickvals=[0, 3, 6]
+            tickvals=[0, 3, 6],
+            range=[0, 6.5] # Baseado na escala da imagem
         )
     )
     return fig
