@@ -490,7 +490,7 @@ def render_prontuario_paciente(nome_paciente):
         for i, doc in enumerate(docs):
             with col_docs[i]:
                 with st.container(border=True):
-                    st.markdown(f"📄 **{doc}**")
+                    st.markdown(f"**{doc}**")
                     st.caption("15/12/2025")
                     st.button("Visualizar", key=f"doc_{i}")
 
@@ -845,9 +845,123 @@ def tela_paciente_gestante():
             </div>
             """, unsafe_allow_html=True)
         else:
-            st.markdown("<div style='text-align:center; color:#999; padding:20px;'>Dia livre. Aproveite para descansar! 🧘‍♀️</div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; color:#999; padding:20px;'>Dia livre. Aproveite para descansar!</div>", unsafe_allow_html=True)
 
+# --- PÁGINA: BI-DIFY ---
+def tela_bi_dify():
+    st.markdown("### 📊 Business Intelligence - Integração Dify")
+    st.caption("Governança: Núcleo de IA DM Health | Responsável: Duda (Data & BI)")
 
+    # Simulação de seleção de contexto (Baseado nos Endpoints 1 e 2)
+    with st.sidebar:
+        st.divider()
+        st.markdown("#### Filtros de Instância")
+        # Endpoint 1: GET /api/instancia/instancias
+        instancia = st.selectbox("Instância", ["DM Health Global", "Clínica Parceira A"])
+        # Endpoint 2: GET /api/instancia/unidades-instancia
+        unidade = st.selectbox("Unidade", ["UBS Central", "Unidade Sul"])
+
+    # --- CAMADA 1: ESTRUTURA E PESSOAL (Endpoints 4, 5, 6, 7) ---
+    st.markdown("#### 👥 Composição e Capacidade")
+    c1, c2, c3, c4 = st.columns(4)
+    
+    # KPIs derivados dos endpoints de listagem de profissionais, pacientes e secretárias
+    with c1: st.metric("Pacientes Ativos", "1,240", "+12%") # Endpoint 5
+    with c2: st.metric("Profissionais", "45", "Ativos")    # Endpoint 4
+    with c3: st.metric("Secretarias", "12", "Online")     # Endpoint 6
+    with c4: st.metric("Personas", "8", "Definidas")      # Endpoint 7
+
+    st.markdown("---")
+
+    # --- CAMADA 2: SAÚDE E ENGAJAMENTO (Endpoints 8, 9, 10) ---
+    col_quest, col_score = st.columns([1, 1])
+
+    with col_quest:
+        with st.container(border=True):
+            st.markdown("#### 📝 Engajamento em Questionários")
+            # Endpoint 8 e 9: Base para métrica de adesão
+            adesao_data = {"Enviados": 500, "Respondidos": 380}
+            fig_adesao = px.bar(
+                x=list(adesao_data.keys()), 
+                y=list(adesao_data.values()),
+                color=list(adesao_data.keys()),
+                color_discrete_map={"Enviados": "#B2DFDB", "Respondidos": "#00796B"}
+            )
+            fig_adesao.update_layout(height=250, showlegend=False, xaxis_title="")
+            st.plotly_chart(fig_adesao, use_container_width=True)
+            st.caption("Base: Questionários de Pacientes e Pesquisa (Research)")
+
+    with col_score:
+        with st.container(border=True):
+            st.markdown("#### 📈 Evolução de Scores (EcoMind)")
+            # Endpoint 10: GET /api/Quizz/by-paciente (Agregado)
+            # Representa a tradução do método científico em lógica de IA [cite: 81]
+            scores_agregados = [7.2, 7.5, 7.1, 7.8, 8.2, 8.0]
+            st.plotly_chart(plot_trend(scores_agregados, "Média de Bem-estar Global"), use_container_width=True)
+            st.markdown("<small>⚠️ Exibição de dados agregados para proteção de subjetividades[cite: 171, 172].</small>", unsafe_allow_html=True)
+
+    # --- REGRA DE OURO (Visual) ---
+    st.warning("Se um indicador não puder ser explicado, defendido e auditado, ele não pode ser implementado[cite: 52, 129].")
+    st.markdown("### 📊 BI-DIFY: Inteligência e Governança")
+    
+    # --- CABEÇALHO DE GOVERNANÇA ---
+    # Todo BI deve ser explicável, defendido e auditado [cite: 52, 129]
+    with st.expander("🛡️ Parâmetros de Governança (Responsible AI by Design)"):
+        st.write(f"**Validação Metodológica:** Rodrigo [cite: 44]")
+        st.write(f"**Qualidade e Rastreabilidade:** Nathy [cite: 28]")
+        st.write(f"**Operacionalização Técnica:** Duda [cite: 40]")
+
+    # --- CAMADA 1: INFRAESTRUTURA E PESSOAS (Endpoints 1, 2, 4, 5, 6, 7) ---
+    st.markdown("#### 🏥 Gestão de Instâncias e Personas")
+    
+    # KPIs derivados dos Endpoints de listagem
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: 
+        st.metric("Pacientes (EP 5)", "1.240", "Base Direct") # Endpoint 5 [cite: 65]
+    with c2: 
+        st.metric("Profissionais (EP 4)", "45", "Ativos")     # Endpoint 4 [cite: 79]
+    with c3: 
+        st.metric("Personas (EP 7)", "8", "Tipologias")      # Endpoint 7 [cite: 83]
+    with c4: 
+        st.metric("Secretarias (EP 6)", "12", "Suporte")      # Endpoint 6 [cite: 73]
+
+    st.markdown("---")
+
+    # --- CAMADA 2: MÉTODO E ENGAJAMENTO EMA (Endpoints 8, 9) ---
+    # A Nathy garante a correta aplicação da metodologia [cite: 25, 27]
+    col_metodo, col_adesao = st.columns([1, 1])
+    
+    with col_metodo:
+        with st.container(border=True):
+            st.markdown("#### 🔬 Configuração Metodológica")
+            # Endpoint 8: Questionários disponíveis
+            st.write("**Questionários Ativos (EP 8):** 5")
+            st.write("**Foco:** Saúde Mental e Bem-Estar (EcoMind) [cite: 65]")
+            st.caption("Garantia de não indução de decisão automática[cite: 39, 93].")
+
+    with col_adesao:
+        with st.container(border=True):
+            st.markdown("#### 📈 Adesão ao Monitoramento")
+            # Dados agregados para evitar vigilância de subjetividades [cite: 171, 172]
+            fig_adesao = px.line(y=[65, 72, 68, 85], x=["Sem 1", "Sem 2", "Sem 3", "Sem 4"], 
+                                 title="Taxa de Resposta EMA (%)")
+            fig_adesao.update_traces(line_color="#00796B")
+            st.plotly_chart(fig_adesao, use_container_width=True)
+
+    # --- CAMADA 3: INSIGHTS CIENTÍFICOS (Endpoint 10) ---
+    # O Rodrigo define o método científico e limites [cite: 16, 18]
+    st.markdown("#### 🧠 Score de Bem-Estar Longitudinal (Quizz EP 10)")
+    with st.container(border=True):
+        # O BI deve preservar a comparabilidade longitudinal [cite: 83]
+        scores_mock = [7.2, 7.5, 7.1, 7.8, 8.2, 8.0]
+        st.plotly_chart(plot_trend(scores_mock, "Evolução de Score Agregado - Instância"), use_container_width=True)
+        st.info("⚠️ Decisões clínicas e assistenciais permanecem 100% humanas[cite: 156, 159].")
+
+    # --- FOOTER DE CONFORMIDADE ---
+    st.divider()
+    if st.button("📄 Gerar Log de Auditoria"):
+        st.success("Log de rastreabilidade gerado para Due Diligence[cite: 117].")
+# Adicione "BI-DIFY" à lista de navegação no sidebar e ao roteamento
 def get_dados_peso_gestacional():
     # Simula curva de peso para Tier 2 (Monitoramento Clínico) e Tier 3 (Nutrição)
     semanas = list(range(0, 42))
@@ -898,7 +1012,7 @@ def aba_jornada_gestante():
     
     with c1:
         with st.container(border=True):
-            st.markdown("#### ⚖️ Curva de Ganho de Peso (IOM)")
+            st.markdown("#### Curva de Ganho de Peso")
             df_peso = get_dados_peso_gestacional()
             
             fig = go.Figure()
@@ -1073,7 +1187,7 @@ def aba_vigilancia_ativa():
     # Score Geral (Rodapé)
     c_score1, c_score2 = st.columns([3, 1])
     with c_score1:
-        st.markdown("#### 🎓 Score de Engajamento do Paciente")
+        st.markdown("#### Score de Engajamento do Paciente")
         # Score calculado (média dos valores do radar)
         score_medio = int(df_radar['Valor'].mean())
         st.progress(score_medio/100, text=f"{score_medio}/100 - Baseado em adesão e hábitos")
