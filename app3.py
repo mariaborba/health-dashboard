@@ -848,88 +848,51 @@ def tela_paciente_gestante():
             st.markdown("<div style='text-align:center; color:#999; padding:20px;'>Dia livre. Aproveite para descansar!</div>", unsafe_allow_html=True)
 
 # --- PÁGINA: BI-DIFY ---
-# --- PÁGINA: BI-DIFY ---
 def tela_bi_dify():
-    st.markdown("### 📊 BI-DIFY: Inteligência, Dados e Governança")
-    st.caption("Foco em Pesquisa, Desenvolvimento & Inovação (PD&I) e IA Responsável.")
+    st.markdown("### 📊 BI-DIFY: Inteligência e Governança")
 
-    # --- GOVERNANÇA E IDENTIDADE (Cabeçalho Institucional) ---
-    with st.expander("🛡️ Parâmetros de IA Responsável por Desenho (Responsible AI by Design)"):
-        st.markdown(f"""
-        * **Validação Metodológica:** Rodrigo (CEO/CSO) - Por quê e até onde [cite: 23, 110]
-        * **Qualidade e Rastreabilidade:** Nathy - Como corretamente [cite: 32, 111]
-        * **Operacionalização Técnica:** Duda - Como ler, monitorar e usar [cite: 40, 112]
-        """)
-        st.info("Regra de Ouro: Se um indicador não puder ser explicado, defendido e auditado, não será implementado[cite: 52, 129].")
-
-    # --- CAMADA 1: INFRAESTRUTURA E ESCOPO (Endpoints 1, 2, 3) ---
-    # Rodrigo estabelece os limites e Duda operacionaliza a leitura executiva [cite: 20, 38]
+    # Filtros de Contexto (EP 1, 2, 3)
     with st.sidebar:
         st.divider()
-        st.markdown("#### Filtros de Escopo Institucional")
-        # EP 1 e 2 definem o enquadramento geral nos produtos EcoMind e Direct [cite: 5, 65]
-        instancia = st.selectbox("Instância (EP 1)", ["DM Health Global", "Clínica Parceira Alpha"])
-        unidade_id = st.selectbox("Unidade (EP 2/3)", ["UBS Central", "Unidade Sul", "Unidade Norte"])
+        st.markdown("#### Filtros de Escopo (EP 1-3)")
+        instancia = st.selectbox("Instância", ["DM Health Global", "Clínica Alpha"])
+        unidade = st.selectbox("Unidade", ["UBS Central", "Unidade Sul"])
 
-    # --- CAMADA 2: PESSOAS E CAPACIDADE (Endpoints 4, 5, 6, 7) ---
-    # Dados coletivos e agregados para evitar vigilância de subjetividades [cite: 171, 172]
-    st.markdown("#### 🏥 Composição da Rede e Personas")
+    # Composição e Personas (EP 4, 5, 6, 7)
+    st.markdown("#### 👥 Composição e Personas")
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("Pacientes (EP 5)", "1,240", "Base Direct")
-    with c2: st.metric("Profissionais (EP 4)", "45", "Ativos")
-    with c3: st.metric("Secretarias (EP 6)", "12", "Suporte")
-    with c4: st.metric("Personas (EP 7)", "8", "Tipologias")
+    with c1: st.metric("Pacientes (EP 5)", "1.240")
+    with c2: st.metric("Profissionais (EP 4)", "45")
+    with c3: st.metric("Secretarias (EP 6)", "12")
+    with c4: st.metric("Personas (EP 7)", "8")
 
     st.markdown("---")
 
-    # --- CAMADA 3: MÉTODO, ENGAJAMENTO E CIÊNCIA (Endpoints 8, 9, 10) ---
-    # Nathy impede deriva metodológica e sustenta explicabilidade [cite: 30, 31]
-    col_metodo, col_score = st.columns([1, 2])
-
-    with col_metodo:
-        with st.container(border=True):
-            st.markdown("#### 🔬 Configuração EMA")
-            # EP 8 e 9: Estruturação da coleta e manutenção de metadados [cite: 85, 87]
-            st.write("**Questionários Ativos (EP 8):** 5")
-            st.write("**Instrumentos (EP 9):** EcoMind v2.1")
-            
-            # Dados de adesão para garantir consistência [cite: 28]
-            adesao_data = {"Enviados": 500, "Respondidos": 380}
-            fig_adesao = px.bar(
-                x=list(adesao_data.keys()), 
-                y=list(adesao_data.values()),
-                color=list(adesao_data.keys()),
-                color_discrete_map={"Enviados": "#B2DFDB", "Respondidos": "#00796B"}
-            )
-            fig_adesao.update_layout(height=200, showlegend=False, xaxis_title="", margin=dict(t=10, b=10))
-            st.plotly_chart(fig_adesao, use_container_width=True)
-            st.caption("A IA atua exclusivamente como suporte à decisão[cite: 7, 96].")
+    # Área de Score iPhone e Questionários (EP 8, 9, 10)
+    col_score, col_metodo = st.columns([2, 1])
 
     with col_score:
         with st.container(border=True):
-            # EP 10: Evolução de Scores no Estilo iPhone (Solicitado pelo usuário)
-            # Sinalização de padrões e tendências sem leitura clínica automática [cite: 103, 108]
-            st.markdown("#### 📈 Média Diária de Scores (EcoMind)")
-            
-            # Dados simulados do Endpoint 10 (Quizz by Paciente)
+            st.markdown("#### 📱 Evolução de Score (EcoMind)")
+            # Dados do EP 10: Score diário
             dados_ep10 = pd.DataFrame({
                 'Dia': ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
-                'Score': [2.8, 5.2, 4.9, 0, 0, 0, 0] # Representando o gráfico da imagem
+                'Score': [2.8, 5.2, 4.9, 0, 0, 0, 0]
             })
-            
-            # Chama a função corrigida (sem borderpad)
             st.plotly_chart(plot_score_evolution_duda(dados_ep10), use_container_width=True)
-            st.caption("Métricas agregadas para proteção de responsabilidade clínica humana[cite: 158, 159].")
 
-    # --- FOOTER: SEGURANÇA E AUDITORIA ---
-    # Documentação contínua para auditoria e due diligence [cite: 117]
-    st.divider()
-    c_audit, c_warning = st.columns([1, 2])
-    with c_audit:
-        if st.button("📄 Gerar Log de Auditoria"):
-            st.success("Rastreabilidade documentada com sucesso.")
-    with c_warning:
-        st.warning("A tecnologia não 'assina embaixo'. A responsabilidade sempre tem nome, cargo e CPF[cite: 164, 165].")
+    with col_metodo:
+        with st.container(border=True):
+            st.markdown("#### 🔬 Método EMA (EP 8/9)")
+            st.write(f"**Questionários:** 5 ativos")
+            st.progress(0.76, text="Adesão 76%")
+            st.caption("A IA apoia, o humano decide.")
+
+    # Regra de Ouro e Auditoria
+    st.warning("Se não puder ser explicado ou auditado, não será implementado.") 
+    if st.button("📄 Gerar Log de Auditoria"):
+        st.success("Log de rastreabilidade gerado.") 
+        
 def get_dados_peso_gestacional():
     # Simula curva de peso para Tier 2 (Monitoramento Clínico) e Tier 3 (Nutrição)
     semanas = list(range(0, 42))
@@ -946,24 +909,20 @@ def get_dados_peso_gestacional():
     })
 
 def plot_score_evolution_duda(df_scores, titulo="Média Diária"):
-    # Cálculo da média para a linha de referência (Endpoint 10)
-    media_valor = df_scores['Score'].replace(0, np.nan).mean() # Média ignorando dias sem dados
+    media_valor = df_scores['Score'].replace(0, np.nan).mean()
     
     fig = go.Figure()
 
-    # Barras de Score - Removido 'borderpad' que causava o erro
+    # Barras de Score (Endpoint 10)
     fig.add_trace(go.Bar(
         x=df_scores['Dia'],
         y=df_scores['Score'],
-        marker=dict(
-            color='#00E5FF',  # Ciano vibrante da imagem
-            line=dict(width=0) # Sem bordas para look clean
-        ),
+        marker=dict(color='#00E5FF', line=dict(width=0)), # Ciano iPhone
         name='Score',
-        width=0.6 # Espaçamento entre barras
+        width=0.6
     ))
 
-    # Linha de Média (Dotted Green) - Suporte à decisão [cite: 31, 109]
+    # Linha de Média (Verde)
     fig.add_hline(
         y=media_valor, 
         line_dash="dash", 
@@ -973,24 +932,16 @@ def plot_score_evolution_duda(df_scores, titulo="Média Diária"):
         annotation_font=dict(color="#00C853", size=12)
     )
 
-    # Layout Dark Mode (Fiel à imagem do iPhone de Duda)
     fig.update_layout(
-        paper_bgcolor='black',
-        plot_bgcolor='black',
+        paper_bgcolor='white', # Fundo Branco solicitado
+        plot_bgcolor='white',
         showlegend=False,
         height=280,
         margin=dict(l=40, r=40, t=40, b=40),
-        xaxis=dict(
-            showgrid=False, 
-            color='#666',
-            tickfont=dict(size=12)
-        ),
+        xaxis=dict(showgrid=False, color='#666', linecolor='#ccc'),
         yaxis=dict(
-            showgrid=True, 
-            gridcolor='#333', 
-            color='#666',
-            tickvals=[0, 3, 6],
-            range=[0, 6.5] # Baseado na escala da imagem
+            showgrid=True, gridcolor='#eee', color='#666',
+            tickvals=[0, 3, 6], range=[0, 7]
         )
     )
     return fig
