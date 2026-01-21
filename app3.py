@@ -1285,3 +1285,5 @@ elif opcao == "Gestor de TI":
     tela_gestor_ti()
 elif opcao == "Gestor Pleno":
     tela_gestor_pleno()
+elif opcao == "Bi-Dify":
+    tela_bi_dify()
