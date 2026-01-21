@@ -895,21 +895,21 @@ def tela_bi_dify():
         with st.container(border=True):
             st.markdown("#### 📈 Evolução de Scores (EcoMind)")
             # Endpoint 10: GET /api/Quizz/by-paciente (Agregado)
-            # Representa a tradução do método científico em lógica de IA [cite: 81]
+            # Representa a tradução do método científico em lógica de IA 
             scores_agregados = [7.2, 7.5, 7.1, 7.8, 8.2, 8.0]
             st.plotly_chart(plot_trend(scores_agregados, "Média de Bem-estar Global"), use_container_width=True)
-            st.markdown("<small>⚠️ Exibição de dados agregados para proteção de subjetividades[cite: 171, 172].</small>", unsafe_allow_html=True)
+            st.markdown("<small>⚠️ Exibição de dados agregados para proteção de subjetividades.</small>", unsafe_allow_html=True)
 
     # --- REGRA DE OURO (Visual) ---
-    st.warning("Se um indicador não puder ser explicado, defendido e auditado, ele não pode ser implementado[cite: 52, 129].")
+    st.warning("Se um indicador não puder ser explicado, defendido e auditado, ele não pode ser implementado.")
     st.markdown("### 📊 BI-DIFY: Inteligência e Governança")
     
     # --- CABEÇALHO DE GOVERNANÇA ---
-    # Todo BI deve ser explicável, defendido e auditado [cite: 52, 129]
+    # Todo BI deve ser explicável, defendido e auditado 
     with st.expander("🛡️ Parâmetros de Governança (Responsible AI by Design)"):
-        st.write(f"**Validação Metodológica:** Rodrigo [cite: 44]")
-        st.write(f"**Qualidade e Rastreabilidade:** Nathy [cite: 28]")
-        st.write(f"**Operacionalização Técnica:** Duda [cite: 40]")
+        st.write(f"**Validação Metodológica:**  ")
+        st.write(f"**Qualidade e Rastreabilidade:** ")
+        st.write(f"**Operacionalização Técnica:**")
 
     # --- CAMADA 1: INFRAESTRUTURA E PESSOAS (Endpoints 1, 2, 4, 5, 6, 7) ---
     st.markdown("#### 🏥 Gestão de Instâncias e Personas")
@@ -917,18 +917,18 @@ def tela_bi_dify():
     # KPIs derivados dos Endpoints de listagem
     c1, c2, c3, c4 = st.columns(4)
     with c1: 
-        st.metric("Pacientes (EP 5)", "1.240", "Base Direct") # Endpoint 5 [cite: 65]
+        st.metric("Pacientes (EP 5)", "1.240", "Base Direct") # Endpoint 5 
     with c2: 
-        st.metric("Profissionais (EP 4)", "45", "Ativos")     # Endpoint 4 [cite: 79]
+        st.metric("Profissionais (EP 4)", "45", "Ativos")     # Endpoint 4 
     with c3: 
-        st.metric("Personas (EP 7)", "8", "Tipologias")      # Endpoint 7 [cite: 83]
+        st.metric("Personas (EP 7)", "8", "Tipologias")      # Endpoint 7 
     with c4: 
-        st.metric("Secretarias (EP 6)", "12", "Suporte")      # Endpoint 6 [cite: 73]
+        st.metric("Secretarias (EP 6)", "12", "Suporte")      # Endpoint 6 
 
     st.markdown("---")
 
     # --- CAMADA 2: MÉTODO E ENGAJAMENTO EMA (Endpoints 8, 9) ---
-    # A Nathy garante a correta aplicação da metodologia [cite: 25, 27]
+    # A Nathy garante a correta aplicação da metodologia 
     col_metodo, col_adesao = st.columns([1, 1])
     
     with col_metodo:
@@ -936,31 +936,31 @@ def tela_bi_dify():
             st.markdown("#### 🔬 Configuração Metodológica")
             # Endpoint 8: Questionários disponíveis
             st.write("**Questionários Ativos (EP 8):** 5")
-            st.write("**Foco:** Saúde Mental e Bem-Estar (EcoMind) [cite: 65]")
-            st.caption("Garantia de não indução de decisão automática[cite: 39, 93].")
+            st.write("**Foco:** Saúde Mental e Bem-Estar (EcoMind) ")
+            st.caption("Garantia de não indução de decisão automática.")
 
     with col_adesao:
         with st.container(border=True):
             st.markdown("#### 📈 Adesão ao Monitoramento")
-            # Dados agregados para evitar vigilância de subjetividades [cite: 171, 172]
+            # Dados agregados para evitar vigilância de subjetividades 
             fig_adesao = px.line(y=[65, 72, 68, 85], x=["Sem 1", "Sem 2", "Sem 3", "Sem 4"], 
                                  title="Taxa de Resposta EMA (%)")
             fig_adesao.update_traces(line_color="#00796B")
             st.plotly_chart(fig_adesao, use_container_width=True)
 
     # --- CAMADA 3: INSIGHTS CIENTÍFICOS (Endpoint 10) ---
-    # O Rodrigo define o método científico e limites [cite: 16, 18]
+    # O Rodrigo define o método científico e limites 
     st.markdown("#### 🧠 Score de Bem-Estar Longitudinal (Quizz EP 10)")
     with st.container(border=True):
-        # O BI deve preservar a comparabilidade longitudinal [cite: 83]
+        # O BI deve preservar a comparabilidade longitudinal 
         scores_mock = [7.2, 7.5, 7.1, 7.8, 8.2, 8.0]
         st.plotly_chart(plot_trend(scores_mock, "Evolução de Score Agregado - Instância"), use_container_width=True)
-        st.info("⚠️ Decisões clínicas e assistenciais permanecem 100% humanas[cite: 156, 159].")
+        st.info("⚠️ Decisões clínicas e assistenciais permanecem 100% humanas.")
 
     # --- FOOTER DE CONFORMIDADE ---
     st.divider()
     if st.button("📄 Gerar Log de Auditoria"):
-        st.success("Log de rastreabilidade gerado para Due Diligence[cite: 117].")
+        st.success("Log de rastreabilidade gerado para Due Diligence.")
 # Adicione "BI-DIFY" à lista de navegação no sidebar e ao roteamento
 def get_dados_peso_gestacional():
     # Simula curva de peso para Tier 2 (Monitoramento Clínico) e Tier 3 (Nutrição)
