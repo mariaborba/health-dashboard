@@ -894,11 +894,16 @@ def tela_bi_dify():
     with col_score:
         with st.container(border=True):
             st.markdown("#### 📈 Evolução de Scores (EcoMind)")
-            # Endpoint 10: GET /api/Quizz/by-paciente (Agregado)
-            # Representa a tradução do método científico em lógica de IA 
-            scores_agregados = [7.2, 7.5, 7.1, 7.8, 8.2, 8.0]
-            st.plotly_chart(plot_trend(scores_agregados, "Média de Bem-estar Global"), use_container_width=True)
-            st.markdown("<small>⚠️ Exibição de dados agregados para proteção de subjetividades.</small>", unsafe_allow_html=True)
+            st.markdown("### 📊 Evolução de Scores - EcoMind")
+    
+            # Dados simulados do Endpoint 10
+            dados_ep10 = pd.DataFrame({
+                'Dia': ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+                'Score': [3.2, 5.1, 4.8, 0, 0, 0, 0] # Representando o gráfico da imagem
+            })
+            
+            st.plotly_chart(plot_score_evolution_duda(dados_ep10, "Média Diária Score"), use_container_width=True)
+            st.caption("Dados agregados para suporte à decisão humana.")
 
     # --- REGRA DE OURO (Visual) ---
     st.warning("Se um indicador não puder ser explicado, defendido e auditado, ele não pode ser implementado.")
@@ -976,6 +981,57 @@ def get_dados_peso_gestacional():
         "Máximo Ideal": peso_ideal_max,
         "Peso Real": peso_real + [None] * (42 - 28)
     })
+
+def plot_score_evolution_duda(df_scores, titulo="Evolução de Score"):
+    # df_scores deve conter colunas 'Dia' e 'Score'
+    
+    media = df_scores['Score'].mean()
+    
+    fig = go.Figure()
+
+    # 1. Barras de Score (Endpoint 10)
+    fig.add_trace(go.Bar(
+        x=df_scores['Dia'],
+        y=df_scores['Score'],
+        marker_color='#00E5FF',  # Ciano estilo imagem
+        name='Score Diário',
+        bordercolor="rgba(0,0,0,0)",
+        borderpad=2
+    ))
+
+    # 2. Linha de Média (Dotted Green)
+    fig.add_hline(
+        y=media, 
+        line_dash="dot", 
+        line_color="#00C853", 
+        annotation_text=f"méd. {media:.1f}", 
+        annotation_position="right",
+        annotation_font_color="#00C853"
+    )
+
+    # Configuração de Layout estilo Dark/Moderno da imagem
+    fig.update_layout(
+        title={'text': titulo, 'font': {'color': 'white', 'size': 16}},
+        paper_bgcolor='#121212', # Fundo escuro
+        plot_bgcolor='#121212',
+        showlegend=False,
+        height=300,
+        margin=dict(l=20, r=60, t=40, b=20),
+        xaxis=dict(
+            showgrid=False, 
+            color='#666', 
+            tickvals=df_scores['Dia'],
+            ticktext=[d[0] for d in df_scores['Dia']] # Mostra D, S, T...
+        ),
+        yaxis=dict(
+            showgrid=True, 
+            gridcolor='#333', 
+            color='#666',
+            range=[0, 10], # Escala de score
+            tickvals=[0, 3, 6]
+        )
+    )
+    return fig
 
 def get_dados_bem_estar():
     # Simula Diário de Bem-Estar (EMA - Tier 3)
