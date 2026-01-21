@@ -1261,7 +1261,8 @@ with st.sidebar:
             "Gestor de Unidade",
             "Gestor Operacional",
             "Gestor de TI",
-            "Gestor Pleno"
+            "Gestor Pleno",
+            "Bi-Dify"
         ],
         label_visibility="collapsed"
     )
